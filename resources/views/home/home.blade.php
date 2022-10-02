@@ -33,6 +33,10 @@
     <!-- Modernizr JS for IE8 support of HTML5 elements and media queries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    
+
 </head>
 <body data-spy="scroll" data-target="#navbar" class="static-layout">
 	<div id="side-nav" class="sidenav">
@@ -314,6 +318,92 @@
 
     @include('home.food')
 
+    <!-- comment and replay system starts here -->
+
+
+    <div style="text-align: center; padding-bottom:20px">
+        
+        <h1 style="padding-bottom: 30px;">All Comments</h1>
+
+        <form action="{{ url('add_comment') }}" method="post">
+            @csrf
+            <textarea style="height: 150px; width: 600px" placeholder="Comment is here" name="comment"></textarea>
+
+            <br>
+
+            <input type="submit" class="btn btn-success" value="Comment">
+        </form>
+
+    </div>
+
+
+
+    <div style="padding-left: 13%;">
+        <h1 style="font-size:20px; padding-bottom:20px">All Commnets</h1>
+
+        @foreach($comment as $comment)
+
+        <div>
+            <b>{{ $comment->name }}</b>
+            <p>{{ $comment->comment }}</p>
+
+            <a style="color:blue" href="javascript::void(0);" onclick="reply(this)" data-CommentId="{{ $comment->id }}">Reply</a>
+
+
+            @foreach($reply as $rep)
+
+            @if($rep->comment_id == $comment->id)
+
+            <div style="padding-left: 3%; padding-top: 10px; padding-bottom: 10px;">
+                <b>{{ $rep->name }}</b>
+                <p>{{ $rep->reply }}</p>
+
+                <a style="color:blue" href="javascript::void(0);" onclick="reply(this)" data-CommentId="{{ $comment->id }}">Reply</a>
+
+            </div>
+            @endif
+
+            @endforeach
+
+        </div>
+
+        @endforeach
+
+
+        <!-- Reply box -->
+
+        <div style="display: none;" class="replyDiv">
+
+            <form action="{{ url('add_reply') }}" method="post">
+                @csrf
+
+            <input type="text" id="commentId" name="commentId" hidden="">
+            <br>
+            <textarea style="height:100px; width: 500px;" placeholder="some text here" name="reply"></textarea>
+            
+            
+
+            <br>
+
+            <button type="submit" class="btn btn-warning">Reply</button>
+            <a href="javascript::void(0);" onclick="reply_close(this)">Close</a>
+
+            </form>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+    <!-- comment and replay system ends here -->
+
 
 
 
@@ -419,9 +509,43 @@
             
         </div>
     </div>
-</footer>	</div>
+</footer>
+	</div>
 </div>
+
+    <script type="text/javascript">
+        
+        function reply(caller){
+
+            document.getElementById('commentId').value = $(caller).attr('data-CommentId');
+
+            $('.replyDiv').insertAfter($(caller));
+            $('.replyDiv').show();
+        }
+
+        function reply_close(caller){
+
+            $('.replyDiv').hide();
+        }
+
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) { 
+            var scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
+    </script>
+
+
+
 	<!-- External JS -->
+    
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 	<script src="vendor/bootstrap/popper.min.js"></script>
@@ -434,5 +558,6 @@
 
 	<!-- Main JS -->
 	<script src="js/app.min.js "></script>
+    <!-- <script src="js/jquery-3.6.0.min.js"></script> -->
 </body>
 </html>

@@ -16,6 +16,12 @@ use App\Models\Cart;
 
 use App\Models\Order;
 
+use App\Models\Comment;
+
+use App\Models\Reply;
+
+
+
 class HomeController extends Controller
 {
     public function index(){
@@ -24,7 +30,11 @@ class HomeController extends Controller
 
         $data1 = chef::all();
 
-        return view('home.home',compact('data','data1'));
+        $comment = Comment::orderby('id','desc')->get();
+
+        $reply = Reply::all();
+
+        return view('home.home',compact('data','data1','comment','reply'));
 
     }
 
@@ -48,8 +58,11 @@ class HomeController extends Controller
 
             $count = cart::where('user_id',$user_id)->count();
 
+            $comment = Comment::orderby('id','desc')->get();
+
+            $reply = Reply::all();
             
-            return view('home.home',compact('data','data1','count'));
+            return view('home.home',compact('data','data1','count','comment','reply'));
 
         }
 
@@ -128,6 +141,60 @@ class HomeController extends Controller
         }
 
         return redirect()->back();
+
+    }
+
+    public function add_comment(Request $request){
+
+
+        if(Auth::id()){
+
+            $comment = new Comment;
+
+            $comment->name = Auth::user()->name;
+            $comment->user_id = Auth::user()->id;
+            $comment->comment = $request->comment;
+
+            $comment->save();
+
+            return redirect()->back();
+
+        }
+
+        else{
+
+            return redirect('login');
+
+        }
+
+
+    }
+
+    public function add_reply(Request $request){
+
+        if (Auth::id()) {
+            
+            $reply = new Reply;
+
+            $reply->name = Auth::user()->name;
+
+            $reply->user_id = Auth::user()->id;
+
+            $reply->comment_id = $request->commentId;
+
+            $reply->reply = $request->reply;
+
+
+            $reply->save();
+
+            return redirect()->back();
+
+        }
+        else{
+
+            return redirect('login');
+
+        }
 
     }
 

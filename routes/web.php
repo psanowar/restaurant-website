@@ -33,6 +33,11 @@ Route::get('/removefood/{id}',[HomeController::class,'removefood']);
 Route::post('/orderconfirm',[HomeController::class,'orderconfirm']);
 
 
+Route::post('/add_comment',[HomeController::class,'add_comment']);
+
+Route::post('/add_reply',[HomeController::class,'add_reply']);
+
+
 
 
 
